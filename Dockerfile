@@ -29,6 +29,7 @@ RUN apt update && apt install -y \
 	slurm \
 	sudo \
 	tmux \
+	tree \
 	vim \
 	&& apt autoremove --purge -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
