@@ -10,14 +10,14 @@ on:
     outputs:
       pushed_new_image:
         description: "Whether a new image was pushed to the registry"
-        value: ${{ jobs.build.outputs.cache_hit != 'true' }}
+        value: ${{ jobs.build.outputs.pushed_image == 'true' }}
 
 jobs:
   build:
     name: Build & Push
-    runs-on: ubuntu-latest # Docker commands don't work on my self-hosted runners (since they are also Docker)
+    runs-on: ubuntu-latest
     outputs:
-      cache_hit: ${{ steps.is-push-needed-hash-test.outputs.cache-hit }}
+      pushed_image: ${{ steps.push-image.outputs.pushed }}
     steps:
       - name: Get repository name
         run: |
@@ -37,35 +37,11 @@ jobs:
           push: false
           load: true
 
-      - name: Docker Push - Restore build hash
-        id: is-push-needed-cache
-        if: ${{ fromJSON(inputs.push) }}
-        uses: actions/cache@v4
-        with:
-          path: build-hash.txt
-          key: is-push-needed-cache
-          restore-keys: is-push-needed-cache
-
-      - name: Docker Push - Compare build hashes
-        id: is-push-needed-hash-test
-        if: ${{ fromJSON(inputs.push) }}
-        run: |
-          docker run --rm ${{ env.BUILD_TAG }} cat build-hash.txt > new-build-hash.txt
-          HASH=$(cat new-build-hash.txt)
-          echo "hash=${HASH}" >> "$GITHUB_OUTPUT"
-          echo "build-hash: $HASH"
-          if [ -f "build-hash.txt" ] && [ "$(cat build-hash.txt)" = "$HASH" ]; then
-            echo "cache-hit=true" >> "$GITHUB_OUTPUT"
-            echo "cache-hit: true"
-          else
-            echo "cache-hit=false" >> "$GITHUB_OUTPUT"
-            echo "cache-hit: false"
-          fi
-          mv new-build-hash.txt build-hash.txt
-
       - name: Docker Push - Login and push
-        if: ${{ fromJSON(inputs.push) && steps.is-push-needed-hash-test.outputs.cache-hit != 'true' }}
+        id: push-image
+        if: ${{ fromJSON(inputs.push) }}
         run: |
           docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PAT_TOKEN }}"
           docker tag ${{ env.BUILD_TAG }} ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME }}:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.REPO_NAME }}:latest
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
