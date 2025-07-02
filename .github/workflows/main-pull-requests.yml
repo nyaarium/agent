@@ -1,0 +1,16 @@
+name: Pull Request (main)
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Build:
+    uses: ./.github/workflows/_build.yml
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+    with:
+      push: false

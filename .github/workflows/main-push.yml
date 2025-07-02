@@ -1,0 +1,22 @@
+# Uses secrets:
+#   DOCKER_PAT_TOKEN
+#   DOCKER_USERNAME
+
+name: Push (main)
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+jobs:
+  Build:
+    uses: ./.github/workflows/_build.yml
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+    with:
+      push: true
