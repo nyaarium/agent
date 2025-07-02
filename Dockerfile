@@ -1,0 +1,62 @@
+FROM debian:trixie
+
+# Switch to apt noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update && apt install -y locales tzdata && apt clean -y && rm -rf /var/lib/apt/lists/* \
+	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+	&& ln -fs /usr/share/zoneinfo/America/Los_Angeles /etc/localtime \
+	&& echo "America/Los_Angeles" > /etc/timezone
+
+# General development tools
+RUN apt update && apt install -y \
+	bash-completion \
+	curl \
+	gcc \
+	git \
+	gpg \
+	htop \
+	iftop \
+	jq \
+	less \
+	make \
+	man \
+	neovim \
+	net-tools \
+	procps \
+	rsync \
+	screen \
+	slurm \
+	sudo \
+	tmux \
+	vim \
+	&& apt autoremove --purge -y \
+	&& apt clean -y && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \
+	&& apt update && apt install -y gh \
+	&& apt clean && rm -rf /var/lib/apt/lists/*
+
+RUN NODE_MAJOR=22 \
+	&& curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+	&& echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+	&& apt update && apt install -y nodejs \
+	&& corepack enable \
+	&& corepack prepare yarn@stable --activate \
+	&& apt clean && rm -rf /var/lib/apt/lists/*
+
+# Install additional dependencies
+# ...
+
+# Switch back to dialog for user's use of apt
+ENV DEBIAN_FRONTEND=dialog
+
+# Add agent user
+RUN groupadd -r agent \
+	&& useradd -rs /bin/bash -m -g agent agent \
+	&& echo "agent:agent" | chpasswd \
+	&& echo "agent ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/agent
+
+COPY .bashrc-root /root/.bashrc
+COPY .bashrc-user /home/agent/.bashrc
