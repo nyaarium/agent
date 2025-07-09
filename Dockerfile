@@ -48,7 +48,7 @@ RUN NODE_MAJOR=22 \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
 # Install additional dependencies
-RUN npm install -g ansis json5 lodash moment moment-timezone uuid
+# ...
 
 # Switch back to dialog for user's use of apt
 ENV DEBIAN_FRONTEND=dialog
