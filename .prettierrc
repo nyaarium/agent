@@ -9,28 +9,5 @@
 	"tabWidth": 4,
 	"trailingComma": "all",
 	"useTabs": true,
-	"quoteProps": "consistent",
-	"overrides": [
-		{
-			"files": [".prettierrc", "*.sh"],
-			"options": {
-				"tabWidth": 4,
-				"useTabs": true
-			}
-		},
-		{
-			"files": ["*.md", ".cursorrules"],
-			"options": {
-				"tabWidth": 2,
-				"useTabs": false
-			}
-		},
-		{
-			"files": "*.yml",
-			"options": {
-				"tabWidth": 2,
-				"useTabs": false
-			}
-		}
-	]
+	"quoteProps": "consistent"
 }
