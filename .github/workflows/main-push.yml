@@ -22,4 +22,5 @@ jobs:
       actions: read
       contents: read
     with:
+      variant: ${{ matrix.variant }}
       push: true

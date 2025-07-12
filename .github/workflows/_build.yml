@@ -3,13 +3,13 @@ name: Workflow Call - Build & Push
 on:
   workflow_call:
     inputs:
-      push:
-        description: "Push the image to Docker Hub"
-        type: boolean
-        required: true
       variant:
         description: "Build variant (default or godot)"
         type: string
+        required: true
+      push:
+        description: "Push the image to Docker Hub"
+        type: boolean
         required: true
     outputs:
       pushed_new_image:
