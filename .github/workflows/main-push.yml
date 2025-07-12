@@ -13,6 +13,9 @@ on:
 
 jobs:
   Build:
+    strategy:
+      matrix:
+        variant: [default, godot]
     uses: ./.github/workflows/_build.yml
     secrets: inherit
     permissions:

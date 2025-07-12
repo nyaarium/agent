@@ -14,16 +14,18 @@ on:
 
 jobs:
   build:
-    name: Build & Push
+    name: Build & Push (${{ matrix.variant }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: [default, godot]
     outputs:
       pushed_image: ${{ steps.push-image.outputs.pushed }}
+    env:
+      DOCKERFILE: Dockerfile.${{ matrix.variant }}
+      BUILD_TAG: build-image-${{ matrix.variant }}
+      REPO_NAME: agent-${{ matrix.variant }}
     steps:
-      - name: Get repository name
-        run: |
-          echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
-          echo "BUILD_TAG=build-image" >> $GITHUB_ENV
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -33,6 +35,7 @@ jobs:
       - name: Build image
         uses: docker/build-push-action@v6
         with:
+          file: ${{ env.DOCKERFILE }}
           tags: ${{ env.BUILD_TAG }}
           push: false
           load: true
