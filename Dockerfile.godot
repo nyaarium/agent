@@ -85,6 +85,13 @@ RUN apt update && apt install -y \
 	&& apt autoremove --purge -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
 
+# Install .NET Core SDK for C# development
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
+	&& dpkg -i packages-microsoft-prod.deb \
+	&& rm packages-microsoft-prod.deb \
+	&& apt update && apt install -y dotnet-sdk-8.0 \
+	&& apt clean && rm -rf /var/lib/apt/lists/*
+
 # Install Godot 4.4.1
 RUN mkdir -p /opt/godot \
 	&& cd /opt/godot \
