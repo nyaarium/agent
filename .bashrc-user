@@ -111,3 +111,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+
+export PATH="/workspace/.cursor/scripts:$PATH"
