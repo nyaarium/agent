@@ -35,6 +35,7 @@ RUN apt update && apt install -y \
 	tmux \
 	tree \
 	unzip \
+	uuid \
 	vim \
 	wget \
 	&& apt autoremove --purge -y \
