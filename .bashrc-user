@@ -113,4 +113,5 @@ if ! shopt -oq posix; then
 fi
 
 
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="/workspace/.cursor/scripts:$PATH"

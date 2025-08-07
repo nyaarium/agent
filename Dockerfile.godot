@@ -41,6 +41,9 @@ RUN apt update && apt install -y \
 	&& apt autoremove --purge -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
 
+# Install Cursor agent
+RUN curl -fsSL https://cursor.com/install | bash
+
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \
 	&& apt update && apt install -y gh \
