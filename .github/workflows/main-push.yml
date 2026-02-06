@@ -1,7 +1,3 @@
-# Uses secrets:
-#   DOCKER_PAT_TOKEN
-#   DOCKER_USERNAME
-
 name: Push (main)
 
 on:
@@ -21,6 +17,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      packages: write
     with:
       variant: ${{ matrix.variant }}
       push: true
