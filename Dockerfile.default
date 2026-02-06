@@ -62,6 +62,7 @@ RUN NODE_MAJOR=24 \
 	&& npm config set -g update-notifier false \
 	&& corepack enable \
 	&& corepack prepare yarn@stable --activate \
+	&& rm -f /etc/apt/sources.list.d/nodesource.list /etc/apt/keyrings/nodesource.gpg \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
 # Install additional dependencies
