@@ -1,4 +1,4 @@
-FROM debian:trixie
+FROM ubuntu:noble
 
 # Switch to apt noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -40,6 +40,7 @@ RUN apt update && apt install -y \
 	uuid \
 	vim \
 	wget \
+	yq \
 	zip \
 	&& apt autoremove --purge -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
@@ -84,7 +85,7 @@ RUN apt update && apt install -y libicu-dev \
 
 # Install Godot runtime dependencies
 RUN apt update && apt install -y \
-	libasound2 \
+	libasound2t64 \
 	libdbus-1-3 \
 	libdecor-0-0 \
 	libdrm2 \
