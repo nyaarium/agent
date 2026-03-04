@@ -45,8 +45,19 @@ RUN apt update && apt install -y \
 	&& apt autoremove --purge -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
 
-# Install Cursor agent
+# Add agent user
+RUN groupadd -r agent \
+	&& useradd -rs /bin/bash -m -g agent agent \
+	&& echo "agent:agent" | chpasswd \
+	&& echo "agent ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/agent
+
+# Install Cursor, Claude, and Copilot agents
+ENV CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+USER agent
 RUN curl -fsSL https://cursor.com/install | bash
+RUN curl -fsSL https://claude.ai/install.sh | bash
+RUN curl -fsSL https://gh.io/copilot-install | bash
+USER root
 
 # GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
@@ -66,17 +77,20 @@ RUN NODE_MAJOR=24 \
 	&& rm -f /etc/apt/sources.list.d/nodesource.list /etc/apt/keyrings/nodesource.gpg \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
+# Bun
+USER agent
+RUN curl -fsSL https://bun.sh/install | bash
+USER root
+
+# Stash agent installs for devcontainer compatibility
+RUN mkdir -p /var/agent-install \
+	&& cp -a /home/agent/.local /home/agent/.claude /home/agent/.bun /var/agent-install/
+
 # Install additional dependencies
 # ...
 
 # Switch back to dialog for user's use of apt
 ENV DEBIAN_FRONTEND=dialog
-
-# Add agent user
-RUN groupadd -r agent \
-	&& useradd -rs /bin/bash -m -g agent agent \
-	&& echo "agent:agent" | chpasswd \
-	&& echo "agent ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/agent
 
 COPY .bashrc-root /root/.bashrc
 COPY .bashrc-user /home/agent/.bashrc
