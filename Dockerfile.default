@@ -82,12 +82,12 @@ USER agent
 RUN curl -fsSL https://bun.sh/install | bash
 USER root
 
+# Install additional dependencies
+# ...
+
 # Stash agent installs for devcontainer compatibility
 RUN mkdir -p /var/agent-install \
 	&& cp -a /home/agent/.local /home/agent/.claude /home/agent/.bun /var/agent-install/
-
-# Install additional dependencies
-# ...
 
 # Switch back to dialog for user's use of apt
 ENV DEBIAN_FRONTEND=dialog

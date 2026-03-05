@@ -82,10 +82,6 @@ USER agent
 RUN curl -fsSL https://bun.sh/install | bash
 USER root
 
-# Stash agent installs for devcontainer compatibility
-RUN mkdir -p /var/agent-install \
-	&& cp -a /home/agent/.local /home/agent/.claude /home/agent/.bun /var/agent-install/
-
 # Install Xvfb and X11 utilities for headless rendering
 RUN apt update && apt install -y \
 	xvfb \
@@ -143,6 +139,10 @@ RUN wget -O /tmp/godot.zip https://github.com/godotengine/godot/releases/downloa
 	&& mv /tmp/Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot \
 	&& chmod +x /usr/local/bin/godot \
 	&& rm -rf /tmp/godot.zip
+
+# Stash agent installs for devcontainer compatibility
+RUN mkdir -p /var/agent-install \
+	&& cp -a /home/agent/.local /home/agent/.claude /home/agent/.bun /var/agent-install/
 
 # Switch back to dialog for user's use of apt
 ENV DEBIAN_FRONTEND=dialog
