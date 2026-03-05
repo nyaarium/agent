@@ -3,7 +3,7 @@ FROM ubuntu:noble
 # Switch to apt noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt install -y locales tzdata && apt clean -y && rm -rf /var/lib/apt/lists/* \
+RUN apt update && apt install -y locales tzdata ca-certificates && apt clean -y && rm -rf /var/lib/apt/lists/* \
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen en_US.UTF-8 \
     && update-locale LANG=en_US.UTF-8 \
@@ -11,6 +11,10 @@ RUN apt update && apt install -y locales tzdata && apt clean -y && rm -rf /var/l
     && echo "America/Los_Angeles" > /etc/timezone
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
+
+# Optional root certificates (place .crt files in root-certs/)
+COPY root-certs/ /usr/local/share/ca-certificates/
+RUN ls /usr/local/share/ca-certificates/*.crt >/dev/null 2>&1 && update-ca-certificates || true
 
 # General development tools
 RUN apt update && apt install -y \
