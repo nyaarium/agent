@@ -25,7 +25,7 @@ jobs:
     env:
       DOCKERFILE: Dockerfile.${{ inputs.variant }}
       BUILD_TAG: build-image-${{ inputs.variant }}
-      REPO_NAME: agent-${{ inputs.variant }}
+      REPO_NAME: ${{ inputs.variant == 'default' && 'workspace' || format('workspace-{0}', inputs.variant) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
