@@ -40,6 +40,8 @@ jobs:
           tags: ${{ env.BUILD_TAG }}
           push: false
           load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Docker Push - Login and push
         id: push-image
