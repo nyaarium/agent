@@ -1,0 +1,11 @@
+#!/bin/bash
+# Stash agent user home for devcontainer compatibility
+mkdir -p /var/agent-install
+for item in /home/agent/.* /home/agent/*; do
+    name=$(basename "$item")
+    case "$name" in .|..|.bashrc|.bash_logout|.profile) continue ;; esac
+    [ -e "$item" ] && cp -a "$item" /var/agent-install/
+done
+
+# Self-delete
+rm -- "$0"

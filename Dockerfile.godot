@@ -45,6 +45,12 @@ RUN apt update && apt install -y \
 	&& apt autoremove --purge -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
 
+# Add vscode user (devcontainer default UID)
+RUN groupadd -r vscode \
+	&& useradd -rs /bin/bash -m -g vscode -u 1001 vscode \
+	&& echo "vscode:vscode" | chpasswd \
+	&& echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode
+
 # Add agent user
 RUN groupadd -r agent \
 	&& useradd -rs /bin/bash -m -g agent agent \
@@ -140,12 +146,8 @@ RUN wget -O /tmp/godot.zip https://github.com/godotengine/godot/releases/downloa
 	&& chmod +x /usr/local/bin/godot \
 	&& rm -rf /tmp/godot.zip
 
-# Stash agent installs for devcontainer compatibility
-RUN mkdir -p /var/agent-install \
-	&& cp -a /home/agent/.local /home/agent/.claude /home/agent/.bun /var/agent-install/
-
-# Switch back to dialog for user's use of apt
-ENV DEBIAN_FRONTEND=dialog
+COPY --chmod=755 finalize /finalize
 
 COPY .bashrc-root /root/.bashrc
+COPY .bashrc-user /home/vscode/.bashrc
 COPY .bashrc-user /home/agent/.bashrc
