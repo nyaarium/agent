@@ -1,10 +1,11 @@
 #!/bin/bash
+
 # Stash agent user home for devcontainer compatibility
-mkdir -p /var/agent-install
+mkdir -p /var/home-seed
 for item in /home/agent/.* /home/agent/*; do
     name=$(basename "$item")
     case "$name" in .|..|.bashrc|.bash_logout|.profile) continue ;; esac
-    [ -e "$item" ] && cp -a "$item" /var/agent-install/
+    [ -e "$item" ] && cp -a "$item" /var/home-seed/
 done
 
 # Self-delete
