@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       variant:
-        description: "Build variant (default or godot)"
+        description: "Build variant (base or godot)"
         type: string
         required: true
       push:
@@ -35,7 +35,7 @@ jobs:
     env:
       DOCKERFILE: Dockerfile.${{ inputs.variant }}
       BUILD_TAG: build-image-${{ inputs.variant }}
-      REPO_NAME: ${{ inputs.variant == 'default' && 'workspace' || format('workspace-{0}', inputs.variant) }}
+      REPO_NAME: ${{ inputs.variant == 'base' && 'workspace' || format('workspace-{0}', inputs.variant) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

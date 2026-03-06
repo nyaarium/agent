@@ -20,7 +20,7 @@ jobs:
       contents: read
       packages: write
     with:
-      variant: default
+      variant: base
       push: true
       export_artifact: false
 
@@ -39,4 +39,4 @@ jobs:
     with:
       variant: ${{ matrix.variant }}
       push: true
-      # base_artifact: build-image-default
+      # base_artifact: build-image-base
