@@ -4,7 +4,16 @@
 
 set -e
 
+DEBUG_LOG="/tmp/home-seed-debug.log"
+echo "=== HOME SEED $(date) ===" > "$DEBUG_LOG"
+
 chown vscode:vscode /workspace
+
+# Include finalize debug log if available
+if [ -f /var/finalize-debug.log ]; then
+	cat /var/finalize-debug.log >> "$DEBUG_LOG"
+	echo "" >> "$DEBUG_LOG"
+fi
 
 # Restore bashrc from image stash with version check
 BASHRC_SRC="/var/home-seed/.bashrc"
@@ -20,14 +29,18 @@ if [ -f "$BASHRC_SRC" ]; then
 	fi
 fi
 
-# Restore home-seed contents into mounted home when missing
+# Merge home-seed into mounted home (seed versions win over stale volume copies)
+echo "--- /home/vscode/.bun/bin/ BEFORE merge ---" >> "$DEBUG_LOG"
+ls -la /home/vscode/.bun/bin/ >> "$DEBUG_LOG" 2>&1 || echo "  (not found)" >> "$DEBUG_LOG"
+echo "" >> "$DEBUG_LOG"
+
 chown -R vscode:vscode /var/home-seed/
-for item in /var/home-seed/.* /var/home-seed/*; do
-	name=$(basename "$item")
-	case "$name" in .|..|.bashrc) continue ;; esac
-	[ -e "$item" ] && [ ! -e "/home/vscode/$name" ] && mv "$item" "/home/vscode/$name"
-done
+rsync -a --exclude='/.bashrc' /var/home-seed/ /home/vscode/
 rm -rf /var/home-seed
+
+echo "--- /home/vscode/.bun/bin/ AFTER merge ---" >> "$DEBUG_LOG"
+ls -la /home/vscode/.bun/bin/ >> "$DEBUG_LOG" 2>&1 || echo "  (not found)" >> "$DEBUG_LOG"
+echo "=== END ===" >> "$DEBUG_LOG"
 
 # Fix ownership on anything not already owned by vscode
 find /home/vscode \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
