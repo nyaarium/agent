@@ -3,7 +3,7 @@ FROM ubuntu:noble
 # Switch to apt noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && apt install -y locales tzdata ca-certificates && apt clean -y && rm -rf /var/lib/apt/lists/* \
+RUN apt update -qq && apt install -qq -y locales tzdata ca-certificates && apt clean -y && rm -rf /var/lib/apt/lists/* \
     && sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen en_US.UTF-8 \
     && update-locale LANG=en_US.UTF-8 \
@@ -17,7 +17,7 @@ COPY root-certs/ /usr/local/share/ca-certificates/
 RUN ls /usr/local/share/ca-certificates/*.crt >/dev/null 2>&1 && update-ca-certificates || true
 
 # General development tools
-RUN apt update && apt install -y \
+RUN apt update -qq && apt install -qq -y \
 	bash-completion \
 	curl \
 	gcc \
@@ -46,7 +46,7 @@ RUN apt update && apt install -y \
 	wget \
 	yq \
 	zip \
-	&& apt autoremove --purge -y \
+	&& apt autoremove --purge -qq -y \
 	&& apt clean -y && rm -rf /var/lib/apt/lists/*
 
 # Add vscode user (devcontainer default UID)
@@ -72,15 +72,15 @@ USER root
 # GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
 	&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \
-	&& apt update && apt install -y gh \
+	&& apt update -qq && apt install -qq -y gh \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
 # Node.js
 RUN NODE_MAJOR=24 \
 	&& curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
 	&& echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-	&& apt update && apt install -y nodejs \
-	&& npm install -g npm@latest \
+	&& apt update -qq && apt install -qq -y nodejs \
+	&& npm install -g npm@latest --loglevel=warn \
 	&& npm config set -g update-notifier false \
 	&& corepack enable \
 	&& corepack prepare yarn@stable --activate \

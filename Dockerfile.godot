@@ -2,7 +2,7 @@ ARG BASE_IMAGE=ghcr.io/nyaarium/workspace:latest
 FROM ${BASE_IMAGE}
 
 # Install Xvfb and X11 utilities for headless rendering
-RUN apt update && apt install -y \
+RUN apt update -qq && apt install -qq -y \
 	xvfb \
 	x11-utils \
 	mesa-utils \
@@ -10,7 +10,7 @@ RUN apt update && apt install -y \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
 # Install .NET SDK
-RUN apt update && apt install -y libicu-dev \
+RUN apt update -qq && apt install -qq -y libicu-dev \
 	&& curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh \
 	&& chmod +x /tmp/dotnet-install.sh \
 	&& /tmp/dotnet-install.sh --channel 8.0 --install-dir /usr/share/dotnet --no-path \
@@ -19,7 +19,7 @@ RUN apt update && apt install -y libicu-dev \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
 # Install Godot runtime dependencies
-RUN apt update && apt install -y \
+RUN apt update -qq && apt install -qq -y \
 	libasound2t64 \
 	libdbus-1-3 \
 	libdecor-0-0 \
@@ -53,7 +53,7 @@ RUN apt update && apt install -y \
 
 # Install Godot
 ENV GODOT_VERSION="4.2.2"
-RUN wget -O /tmp/godot.zip https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
+RUN wget -nv -O /tmp/godot.zip https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
 	&& unzip /tmp/godot.zip -d /tmp \
 	&& mv /tmp/Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot \
 	&& chmod +x /usr/local/bin/godot \
@@ -61,6 +61,6 @@ RUN wget -O /tmp/godot.zip https://github.com/godotengine/godot/releases/downloa
 
 # Install Godot export templates to system location
 RUN mkdir -p /var/lib/godot/templates/${GODOT_VERSION}.stable \
-	&& wget -O /tmp/godot-export-templates.tpz https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
+	&& wget -nv -O /tmp/godot-export-templates.tpz https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
 	&& unzip /tmp/godot-export-templates.tpz -d /var/lib/godot/templates/${GODOT_VERSION}.stable \
 	&& rm /tmp/godot-export-templates.tpz
