@@ -11,6 +11,16 @@ on:
         description: "Push the image to GitHub Container Registry"
         type: boolean
         required: true
+      base_artifact:
+        description: "Artifact name to download and load before building (sets BASE_IMAGE build arg to that tag)"
+        type: string
+        required: false
+        default: ""
+      export_artifact:
+        description: "Export the built image as an artifact for downstream jobs"
+        type: boolean
+        required: false
+        default: false
     outputs:
       pushed_new_image:
         description: "Whether a new image was pushed to the registry"
@@ -18,7 +28,7 @@ on:
 
 jobs:
   build:
-    name: Build & Push (${{ inputs.variant }})
+    name: Build ${{ inputs.push && '& Push ' || '' }}(${{ inputs.variant }})
     runs-on: ubuntu-latest
     outputs:
       pushed_image: ${{ steps.push-image.outputs.pushed }}
@@ -33,6 +43,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Download base image artifact
+        if: ${{ inputs.base_artifact != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.base_artifact }}
+          path: /tmp/artifacts
+
+      - name: Load base image into Docker
+        if: ${{ inputs.base_artifact != '' }}
+        run: docker load -i /tmp/artifacts/image.tar
+
       - name: Build image
         uses: docker/build-push-action@v6
         with:
@@ -40,8 +61,21 @@ jobs:
           tags: ${{ env.BUILD_TAG }}
           push: false
           load: true
+          build-args: ${{ inputs.base_artifact != '' && format('BASE_IMAGE={0}', inputs.base_artifact) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Export image as artifact
+        if: ${{ inputs.export_artifact }}
+        run: docker save ${{ env.BUILD_TAG }} -o /tmp/image.tar
+
+      - name: Upload image artifact
+        if: ${{ inputs.export_artifact }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BUILD_TAG }}
+          path: /tmp/image.tar
+          retention-days: 1
 
       - name: Docker Push - Login and push
         id: push-image

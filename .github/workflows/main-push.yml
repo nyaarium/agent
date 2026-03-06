@@ -11,10 +11,25 @@ on:
       - main
 
 jobs:
-  Build:
+  build_base:
+    name: Build Base
+    uses: ./.github/workflows/_build.yml
+    secrets: inherit
+    permissions:
+      actions: read
+      contents: read
+      packages: write
+    with:
+      variant: default
+      push: true
+      export_artifact: false
+
+  build_variants:
+    name: Build Variants
+    needs: build_base
     strategy:
       matrix:
-        variant: [default, godot]
+        variant: [godot]
     uses: ./.github/workflows/_build.yml
     secrets: inherit
     permissions:
@@ -24,3 +39,4 @@ jobs:
     with:
       variant: ${{ matrix.variant }}
       push: true
+      # base_artifact: build-image-default
