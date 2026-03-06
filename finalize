@@ -1,8 +1,5 @@
 #!/bin/bash
 
-DEBUG_LOG="/var/finalize-debug.log"
-echo "=== FINALIZE $(date) ===" > "$DEBUG_LOG"
-
 # Stash agent user home for devcontainer compatibility
 mkdir -p /var/home-seed
 for item in /home/agent/.* /home/agent/*; do
@@ -12,7 +9,6 @@ for item in /home/agent/.* /home/agent/*; do
 done
 
 # Fix absolute symlinks that reference /home/agent/ — make them relative
-echo "--- Fixing absolute symlinks ---" >> "$DEBUG_LOG"
 find /var/home-seed -type l | while read -r link; do
     target=$(readlink "$link")
     if [[ "$target" == /home/agent/* ]]; then
@@ -20,21 +16,10 @@ find /var/home-seed -type l | while read -r link; do
         link_rel="${link#/var/home-seed/}"
         link_dir=$(dirname "$link_rel")
         if new_target=$(realpath -m --relative-to="/var/home-seed/$link_dir" "/var/home-seed/$home_rel"); then
-            echo "  SYMFIX: ${link_rel}: ${target} -> ${new_target}" >> "$DEBUG_LOG"
             ln -sf "$new_target" "$link"
-        else
-            echo "  SYMFIX FAIL: ${link_rel}: ${target}" >> "$DEBUG_LOG"
         fi
     fi
 done
-
-echo "" >> "$DEBUG_LOG"
-echo "--- Symlinks after fix ---" >> "$DEBUG_LOG"
-find /var/home-seed -type l -printf '%p -> ' -exec readlink {} \; >> "$DEBUG_LOG" 2>&1
-echo "" >> "$DEBUG_LOG"
-echo "--- .bun/bin/ ---" >> "$DEBUG_LOG"
-ls -la /var/home-seed/.bun/bin/ >> "$DEBUG_LOG" 2>&1
-echo "=== END FINALIZE ===" >> "$DEBUG_LOG"
 
 # Self-delete
 rm -- "$0"
