@@ -54,7 +54,7 @@ RUN apt update -qq && apt install -qq -y \
 # Install Godot
 ENV GODOT_VERSION="4.2.2"
 RUN wget -nv -O /tmp/godot.zip https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip \
-	&& unzip /tmp/godot.zip -d /tmp \
+	&& unzip -q /tmp/godot.zip -d /tmp \
 	&& mv /tmp/Godot_v${GODOT_VERSION}-stable_linux.x86_64 /usr/local/bin/godot \
 	&& chmod +x /usr/local/bin/godot \
 	&& rm -rf /tmp/godot.zip
@@ -62,5 +62,5 @@ RUN wget -nv -O /tmp/godot.zip https://github.com/godotengine/godot/releases/dow
 # Install Godot export templates to system location
 RUN mkdir -p /var/lib/godot/templates/${GODOT_VERSION}.stable \
 	&& wget -nv -O /tmp/godot-export-templates.tpz https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz \
-	&& unzip /tmp/godot-export-templates.tpz -d /var/lib/godot/templates/${GODOT_VERSION}.stable \
+	&& unzip -q /tmp/godot-export-templates.tpz -d /var/lib/godot/templates/${GODOT_VERSION}.stable \
 	&& rm /tmp/godot-export-templates.tpz
