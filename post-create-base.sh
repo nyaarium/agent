@@ -25,5 +25,5 @@ chown -R vscode:vscode /var/home-seed/
 rsync -a --exclude='/.bashrc' /var/home-seed/ /home/vscode/
 rm -rf /var/home-seed
 
-# Fix ownership on anything not already owned by vscode
-find /home/vscode \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
+# Fix ownership on anything not already owned by vscode (skip scripts mount from host)
+find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
