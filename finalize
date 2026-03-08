@@ -1,5 +1,18 @@
 #!/bin/bash
 
+
+# Configure gitconfig
+cat > "${VOLUME_HOME}/.gitconfig" <<EOF
+[commit]
+	gpgSign = false
+[safe]
+	directory = /workspace
+[init]
+	defaultBranch = main
+EOF
+chmod 644 "${VOLUME_HOME}/.gitconfig"
+
+
 # Stash agent user home for devcontainer compatibility
 mkdir -p /var/home-seed
 for item in /home/agent/.* /home/agent/*; do
@@ -7,6 +20,7 @@ for item in /home/agent/.* /home/agent/*; do
     case "$name" in .|..|.bashrc|.bash_logout|.profile) continue ;; esac
     [ -e "$item" ] && cp -a "$item" /var/home-seed/
 done
+
 
 # Fix absolute symlinks that reference /home/agent/ — make them relative
 find /var/home-seed -type l | while read -r link; do
@@ -20,6 +34,7 @@ find /var/home-seed -type l | while read -r link; do
         fi
     fi
 done
+
 
 # Self-delete
 rm -- "$0"

@@ -4,6 +4,19 @@
 
 set -e
 
+
+# Remind user if git identity is not configured
+GIT_NAME=$(git config --global user.name 2>/dev/null)
+GIT_EMAIL=$(git config --global user.email 2>/dev/null)
+if [ -z "$GIT_NAME" ] || [ -z "$GIT_EMAIL" ]; then
+	echo ""
+	echo "Set your git identity with:"
+	echo "   git config --global user.name \"Your Name\""
+	echo "   git config --global user.email \"your@email.com\""
+	echo ""
+fi
+
+
 # Agent Team Bridge - clone or update, rebuild if changed
 ATB_URL="https://github.com/atelier-nyaarium/agent-team-bridge.git"
 ATB_REPO="$HOME/agent-team-bridge"
