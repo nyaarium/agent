@@ -42,6 +42,22 @@ elif su -c 'which code' vscode >/dev/null 2>&1; then
 fi
 
 
+# Trust workspace for Claude Code
+if [ -n "$PROJECT_NAME" ] && command -v jq >/dev/null 2>&1; then
+	CLAUDE_JSON="/home/vscode/.claude.json"
+	WORKSPACE_PATH="/workspace/$PROJECT_NAME"
+	if [ ! -f "$CLAUDE_JSON" ]; then
+		echo '{}' > "$CLAUDE_JSON"
+	fi
+	UPDATED=$(jq --arg path "$WORKSPACE_PATH" '
+		.projects[$path] //= {} |
+		.projects[$path].hasTrustDialogAccepted = true
+	' "$CLAUDE_JSON")
+	echo "$UPDATED" > "$CLAUDE_JSON"
+	chown vscode:vscode "$CLAUDE_JSON"
+fi
+
+
 # Fix ownership on anything not already owned by vscode (skip scripts mount from host)
 chown vscode:vscode /workspace
 find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
