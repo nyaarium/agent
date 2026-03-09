@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/nyaarium/workspace:latest
+ARG BASE_IMAGE=ghcr.io/atelier-nyaarium/workspace:latest
 FROM ${BASE_IMAGE}
 
 # Install Xvfb and X11 utilities for headless rendering
