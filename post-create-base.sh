@@ -22,7 +22,7 @@ fi
 
 # Merge home-seed into mounted home (seed versions win over stale volume copies)
 chown -R vscode:vscode /var/home-seed/
-rsync -a --exclude='/.bashrc' /var/home-seed/ /home/vscode/
+rsync -a --ignore-existing --exclude='/.bashrc' /var/home-seed/ /home/vscode/
 rm -rf /var/home-seed
 
 
