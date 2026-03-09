@@ -42,19 +42,41 @@ elif su -c 'which code' vscode >/dev/null 2>&1; then
 fi
 
 
-# Trust workspace for Claude Code
+# Trust workspace for Claude Code, Cursor, and Copilot
 if [ -n "$PROJECT_NAME" ] && command -v jq >/dev/null 2>&1; then
-	CLAUDE_JSON="/home/vscode/.claude.json"
 	WORKSPACE_PATH="/workspace/$PROJECT_NAME"
-	if [ ! -f "$CLAUDE_JSON" ]; then
-		echo '{}' > "$CLAUDE_JSON"
-	fi
+
+	# Claude Code: ~/.claude.json
+	CLAUDE_JSON="/home/vscode/.claude.json"
+	[ ! -f "$CLAUDE_JSON" ] && echo '{}' > "$CLAUDE_JSON"
 	UPDATED=$(jq --arg path "$WORKSPACE_PATH" '
 		.projects[$path] //= {} |
 		.projects[$path].hasTrustDialogAccepted = true
 	' "$CLAUDE_JSON")
 	echo "$UPDATED" > "$CLAUDE_JSON"
-	chown vscode:vscode "$CLAUDE_JSON"
+
+	# Cursor: ~/.cursor/projects/<folder-name>/.workspace-trusted
+	FOLDER_NAME=$(echo "$WORKSPACE_PATH" | sed 's|^/||; s|/|-|g')
+	CURSOR_DIR="/home/vscode/.cursor/projects/$FOLDER_NAME"
+	CURSOR_TRUST="$CURSOR_DIR/.workspace-trusted"
+	if [ ! -f "$CURSOR_TRUST" ]; then
+		mkdir -p "$CURSOR_DIR"
+		jq -n --arg path "$WORKSPACE_PATH" '{trustedAt: (now | todate), workspacePath: $path}' > "$CURSOR_TRUST"
+	fi
+
+	# Copilot: ~/.copilot/config.json
+	COPILOT_JSON="/home/vscode/.copilot/config.json"
+	if [ ! -f "$COPILOT_JSON" ]; then
+		mkdir -p /home/vscode/.copilot
+		echo '{}' > "$COPILOT_JSON"
+	fi
+	UPDATED=$(jq --arg path "$WORKSPACE_PATH" '
+		.trusted_folders //= [] |
+		if (.trusted_folders | index($path)) then . else .trusted_folders += [$path] end
+	' "$COPILOT_JSON")
+	echo "$UPDATED" > "$COPILOT_JSON"
+
+	chown -R vscode:vscode /home/vscode/.claude.json /home/vscode/.cursor /home/vscode/.copilot
 fi
 
 
