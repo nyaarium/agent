@@ -22,7 +22,7 @@ jobs:
     with:
       variant: base
       push: true
-      export_artifact: false
+      export_artifact: true
 
   build_variants:
     name: Build Variants
@@ -39,4 +39,4 @@ jobs:
     with:
       variant: ${{ matrix.variant }}
       push: true
-      # base_artifact: build-image-base
+      base_artifact: build-image-base
