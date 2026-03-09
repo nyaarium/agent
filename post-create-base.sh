@@ -20,7 +20,7 @@ if [ -f "$BASHRC_SRC" ]; then
 fi
 
 
-# Merge home-seed into mounted home (seed versions win over stale volume copies)
+# Merge home-seed into mounted home
 chown -R vscode:vscode /var/home-seed/
 rsync -a --ignore-existing --exclude='/.bashrc' /var/home-seed/ /home/vscode/
 rm -rf /var/home-seed
