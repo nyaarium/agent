@@ -23,6 +23,7 @@ fi
 # Restore agent home into mounted vscode home (skip existing files on volume)
 rsync -a --ignore-existing --exclude='/.bashrc' --exclude='/.bash_logout' --exclude='/.profile' /home/agent/ /home/vscode/
 
+
 # Fix ownership before any su commands (rsync preserves agent:agent ownership)
 chown vscode:vscode /workspace
 find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
