@@ -2,6 +2,23 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+# Devcontainer: v7
+
+# PATH setup (before interactive guard so scripts and docker exec get them too)
+export PATH="$HOME/.bun/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.dotnet/tools:$PATH"
+export PATH="$HOME/scripts:$PATH"
+
+claude-skip() {
+    command claude --dangerously-skip-permissions "$@"
+}
+
+if [ -f "$HOME/scripts/.env" ]; then
+    source "$HOME/scripts/.env"
+fi
+
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -145,19 +162,3 @@ __bash_prompt() {
 }
 PROMPT_COMMAND=__bash_prompt
 export PROMPT_DIRTRIM=4
-
-
-# Devcontainer: v6
-
-export PATH="$HOME/.bun/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.dotnet/tools:$PATH"
-export PATH="$HOME/scripts:$PATH"
-
-claude-skip() {
-    command claude --dangerously-skip-permissions "$@"
-}
-
-if [ -f "$HOME/scripts/.env" ]; then
-    source "$HOME/scripts/.env"
-fi
