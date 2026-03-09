@@ -32,7 +32,7 @@ fi
 
 echo "Starting claude remote-control in ${PROJECT_NAME}..."
 docker exec -d -u vscode "$CONTAINER_ID" \
-	tmux new-session -d -s "$TMUX_SESSION" "source ~/.bashrc; cd /workspace/${PROJECT_NAME}; claude remote-control --name '${PROJECT_NAME}'; exec bash"
+	tmux new-session -d -s "$TMUX_SESSION" "source ~/.bashrc; cd /workspace/${PROJECT_NAME}; claude-skip remote-control --name '${PROJECT_NAME}'; exec bash"
 
 
 sleep 2
