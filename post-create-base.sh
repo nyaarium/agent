@@ -25,7 +25,7 @@ rsync -a --ignore-existing --exclude='/.bashrc' --exclude='/.bash_logout' --excl
 
 
 # Fix ownership before any su commands (rsync preserves agent:agent ownership)
-chown vscode:vscode /workspace
+chown vscode:vscode /workspace "/workspace/$PROJECT_NAME"
 find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
 
 
