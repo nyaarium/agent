@@ -23,6 +23,10 @@ fi
 # Restore agent home into mounted vscode home (skip existing files on volume)
 rsync -a --ignore-existing --exclude='/.bashrc' --exclude='/.bash_logout' --exclude='/.profile' /home/agent/ /home/vscode/
 
+# Fix ownership before any su commands (rsync preserves agent:agent ownership)
+chown vscode:vscode /workspace
+find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
+
 
 # Ensure base gitconfig settings
 su -c 'git config --global safe.directory /workspace' vscode
@@ -76,8 +80,3 @@ if [ -n "$PROJECT_NAME" ] && command -v jq >/dev/null 2>&1; then
 
 	chown -R vscode:vscode /home/vscode/.claude.json /home/vscode/.cursor /home/vscode/.copilot
 fi
-
-
-# Fix ownership on anything not already owned by vscode (skip scripts mount from host)
-chown vscode:vscode /workspace
-find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
