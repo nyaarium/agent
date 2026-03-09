@@ -5,8 +5,8 @@
 set -e
 
 
-# Restore bashrc from image stash with version check
-BASHRC_SRC="/var/home-seed/.bashrc"
+# Restore bashrc from image with version check
+BASHRC_SRC="/home/agent/.bashrc"
 BASHRC_DST="/home/vscode/.bashrc"
 if [ -f "$BASHRC_SRC" ]; then
 	VERSION_STRING=$(grep -o "Devcontainer: v.*" "$BASHRC_SRC" | head -n1)
@@ -20,10 +20,8 @@ if [ -f "$BASHRC_SRC" ]; then
 fi
 
 
-# Merge home-seed into mounted home
-chown -R vscode:vscode /var/home-seed/
-rsync -a --ignore-existing --exclude='/.bashrc' /var/home-seed/ /home/vscode/
-rm -rf /var/home-seed
+# Restore agent home into mounted vscode home (skip existing files on volume)
+rsync -a --ignore-existing --exclude='/.bashrc' --exclude='/.bash_logout' --exclude='/.profile' /home/agent/ /home/vscode/
 
 
 # Ensure base gitconfig settings

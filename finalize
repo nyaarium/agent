@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-# Configure gitconfig
-cat > "${VOLUME_HOME}/.gitconfig" <<EOF
+# Configure gitconfig for agent user
+cat > /home/agent/.gitconfig <<EOF
 [commit]
 	gpgSign = false
 [safe]
@@ -10,26 +10,16 @@ cat > "${VOLUME_HOME}/.gitconfig" <<EOF
 [init]
 	defaultBranch = main
 EOF
-chmod 644 "${VOLUME_HOME}/.gitconfig"
+chmod 644 /home/agent/.gitconfig
 
 
-# Stash agent user home for devcontainer compatibility
-mkdir -p /var/home-seed
-for item in /home/agent/.* /home/agent/*; do
-    name=$(basename "$item")
-    case "$name" in .|..|.bashrc|.bash_logout|.profile) continue ;; esac
-    [ -e "$item" ] && cp -a "$item" /var/home-seed/
-done
-
-
-# Fix absolute symlinks that reference /home/agent/ — make them relative
-find /var/home-seed -type l | while read -r link; do
+# Fix absolute symlinks in agent home. Make them relative for portability
+find /home/agent -type l | while read -r link; do
     target=$(readlink "$link")
     if [[ "$target" == /home/agent/* ]]; then
         home_rel="${target#/home/agent/}"
-        link_rel="${link#/var/home-seed/}"
-        link_dir=$(dirname "$link_rel")
-        if new_target=$(realpath -m --relative-to="/var/home-seed/$link_dir" "/var/home-seed/$home_rel"); then
+        link_dir=$(dirname "${link#/home/agent/}")
+        if new_target=$(realpath -m --relative-to="/home/agent/$link_dir" "/home/agent/$home_rel"); then
             ln -sf "$new_target" "$link"
         fi
     fi
