@@ -97,5 +97,8 @@ COPY --chmod=755 post-create-base.sh /var/post-create-base.sh
 COPY --chmod=755 post-start-base.sh /var/post-start-base.sh
 
 COPY .bashrc-root /root/.bashrc
-COPY .bashrc-user /home/vscode/.bashrc
 COPY .bashrc-user /home/agent/.bashrc
+RUN echo "source /root/.bashrc" > /root/.bash_profile \
+    && chmod 644 /root/.bashrc /root/.bash_profile
+RUN echo "source ~/.bashrc" > /home/agent/.bash_profile \
+    && chmod 644 /home/agent/.bashrc /home/agent/.bash_profile
