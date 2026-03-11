@@ -68,7 +68,6 @@ RUN curl -fsSL https://cursor.com/install | bash
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN curl -fsSL https://gh.io/copilot-install | bash
 USER root
-RUN npm install -g @openai/codex
 
 # GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
@@ -87,6 +86,9 @@ RUN NODE_MAJOR=24 \
 	&& corepack prepare yarn@stable --activate \
 	&& rm -f /etc/apt/sources.list.d/nodesource.list /etc/apt/keyrings/nodesource.gpg \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
+
+# Codex
+RUN npm install -g @openai/codex
 
 # Bun
 USER agent
