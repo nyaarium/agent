@@ -45,7 +45,7 @@ elif su -c 'which code' vscode >/dev/null 2>&1; then
 fi
 
 
-# Trust workspace for Claude Code, Cursor, and Copilot
+# Trust workspace for Claude Code, Cursor, Copilot, and Codex
 if [ -n "$PROJECT_NAME" ] && command -v jq >/dev/null 2>&1; then
 	WORKSPACE_PATH="/workspace/$PROJECT_NAME"
 
@@ -79,5 +79,16 @@ if [ -n "$PROJECT_NAME" ] && command -v jq >/dev/null 2>&1; then
 	' "$COPILOT_JSON")
 	echo "$UPDATED" > "$COPILOT_JSON"
 
-	chown -R vscode:vscode /home/vscode/.claude.json /home/vscode/.cursor /home/vscode/.copilot
+	# Codex: ~/.codex/config.toml
+	CODEX_DIR="/home/vscode/.codex"
+	CODEX_TOML="$CODEX_DIR/config.toml"
+	if [ ! -f "$CODEX_TOML" ]; then
+		mkdir -p "$CODEX_DIR"
+		echo "" > "$CODEX_TOML"
+	fi
+	if ! grep -qF "[projects.\"$WORKSPACE_PATH\"]" "$CODEX_TOML" 2>/dev/null; then
+		printf '\n[projects."%s"]\ntrust_level = "trusted"\n' "$WORKSPACE_PATH" >> "$CODEX_TOML"
+	fi
+
+	chown -R vscode:vscode /home/vscode/.claude.json /home/vscode/.cursor /home/vscode/.copilot /home/vscode/.codex
 fi

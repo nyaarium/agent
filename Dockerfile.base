@@ -61,13 +61,14 @@ RUN groupadd -r agent \
 	&& echo "agent:agent" | chpasswd \
 	&& echo "agent ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/agent
 
-# Install Cursor, Claude, and Copilot agents
+# Install Cursor, Claude, Copilot, and Codex agents
 ENV CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 USER agent
 RUN curl -fsSL https://cursor.com/install | bash
 RUN curl -fsSL https://claude.ai/install.sh | bash
 RUN curl -fsSL https://gh.io/copilot-install | bash
 USER root
+RUN npm install -g @openai/codex
 
 # GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
