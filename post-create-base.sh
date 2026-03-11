@@ -24,8 +24,14 @@ fi
 rsync -a --ignore-existing --exclude='/.bashrc' --exclude='/.bash_logout' --exclude='/.profile' /home/agent/ /home/vscode/
 
 
-# Fix ownership before any su commands (rsync preserves agent:agent ownership)
-chown vscode:vscode /workspace "/workspace/$PROJECT_NAME"
+# Fix ownership of workspace files
+chown vscode:vscode /workspace
+for item in /workspace/* /workspace/.*; do
+	[ "$item" = "/workspace/." ] || [ "$item" = "/workspace/.." ] && continue
+	chown vscode:vscode "$item"
+done
+
+# Fix ownership of volume mounted home dir recursively
 find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
 
 
