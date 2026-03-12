@@ -26,10 +26,7 @@ rsync -a --ignore-existing --exclude='/.bashrc' --exclude='/.bash_logout' --excl
 
 # Fix ownership of workspace files
 chown vscode:vscode /workspace
-for item in /workspace/* /workspace/.*; do
-	[ "$item" = "/workspace/." ] || [ "$item" = "/workspace/.." ] && continue
-	chown vscode:vscode "$item"
-done
+find /workspace -mindepth 1 -maxdepth 1 -exec chown vscode:vscode {} +
 
 # Fix ownership of volume mounted home dir recursively
 find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
