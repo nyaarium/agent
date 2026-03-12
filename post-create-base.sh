@@ -34,8 +34,8 @@ find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \
 
 # Ensure base gitconfig settings
 su -c 'git config --global safe.directory /workspace' vscode
-su -c 'git config --global commit.gpgSign 2>/dev/null' vscode  || su -c 'git config --global commit.gpgSign false' vscode
-su -c 'git config --global init.defaultBranch 2>/dev/null' vscode || su -c 'git config --global init.defaultBranch main' vscode
+su -c 'git config --global commit.gpgSign >/dev/null 2>&1' vscode  || su -c 'git config --global commit.gpgSign false' vscode
+su -c 'git config --global init.defaultBranch >/dev/null 2>&1' vscode || su -c 'git config --global init.defaultBranch main' vscode
 
 
 # Detect and set editor
