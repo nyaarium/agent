@@ -75,6 +75,15 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | g
 	&& apt update -qq && apt install -qq -y gh \
 	&& apt clean && rm -rf /var/lib/apt/lists/*
 
+# kubectl + Helm
+RUN KUBE_VERSION=1.35 \
+	&& curl -fsSL https://pkgs.k8s.io/core:/stable:/v$KUBE_VERSION/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg \
+	&& echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v$KUBE_VERSION/deb/ /" > /etc/apt/sources.list.d/kubernetes.list \
+	&& curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor -o /usr/share/keyrings/helm.gpg \
+	&& echo "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main" > /etc/apt/sources.list.d/helm-stable-debian.list \
+	&& apt update -qq && apt install -qq -y kubectl helm \
+	&& apt clean && rm -rf /var/lib/apt/lists/*
+
 # Node.js
 RUN NODE_MAJOR=24 \
 	&& curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
