@@ -25,5 +25,3 @@ devcontainer up --workspace-folder "$SCRIPT_DIR"
 echo "Running lifecycle commands..."
 devcontainer run-user-commands --workspace-folder "$SCRIPT_DIR"
 
-echo "Attaching shell..."
-exec devcontainer exec --workspace-folder "$SCRIPT_DIR" bash
