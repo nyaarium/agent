@@ -34,8 +34,17 @@ echo "Starting claude remote-control in ${PROJECT_NAME}..."
 docker exec -d -u vscode "$CONTAINER_ID" \
 	tmux new-session -d -s "$TMUX_SESSION" "source ~/.bashrc; cd /workspace/${PROJECT_NAME}; claude-skip remote-control --name '${PROJECT_NAME}'; exec bash"
 
-
-sleep 2
+# Wait for Claude to start, auto-accept dev channels prompt if it appears
+for i in $(seq 1 10); do
+	sleep 1
+	SCREEN=$(docker exec -u vscode "$CONTAINER_ID" tmux capture-pane -t "$TMUX_SESSION" -p 2>/dev/null || true)
+	if echo "$SCREEN" | grep -q "Claude Code"; then
+		break
+	fi
+	if echo "$SCREEN" | grep -q "Loading development channels"; then
+		docker exec -u vscode "$CONTAINER_ID" tmux send-keys -t "$TMUX_SESSION" Enter
+	fi
+done
 
 
 if docker exec -u vscode "$CONTAINER_ID" tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
