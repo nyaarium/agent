@@ -32,6 +32,13 @@ find /workspace -mindepth 1 -maxdepth 1 -exec chown vscode:vscode {} +
 find /home/vscode -name scripts -prune -o \( ! -user vscode -o ! -group vscode \) -exec chown vscode:vscode {} +
 
 
+# Add GitHub SSH host key to known_hosts
+su -c 'mkdir -p ~/.ssh' vscode
+if ! su -c 'grep -q "^github.com " ~/.ssh/known_hosts 2>/dev/null' vscode; then
+	su -c 'ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null' vscode
+fi
+
+
 # Ensure base gitconfig settings
 su -c 'git config --global safe.directory /workspace' vscode
 su -c 'git config --global commit.gpgSign >/dev/null 2>&1' vscode  || su -c 'git config --global commit.gpgSign false' vscode
