@@ -30,9 +30,9 @@ if docker exec -u vscode "$CONTAINER_ID" tmux has-session -t "$TMUX_SESSION" 2>/
 fi
 
 
-echo "Starting claude remote-control in ${PROJECT_NAME}..."
+echo "Starting claude in ${PROJECT_NAME}..."
 docker exec -d -u vscode "$CONTAINER_ID" \
-	tmux new-session -d -s "$TMUX_SESSION" "source ~/.bashrc; cd /workspace/${PROJECT_NAME}; claude --name '${PROJECT_NAME}' --rc --model opus --effort high --dangerously-skip-permissions --dangerously-load-development-channels plugin:agent-team-bridge@agent-team-bridge; exec bash"
+	tmux new-session -d -s "$TMUX_SESSION" "source ~/.bashrc; cd /workspace/${PROJECT_NAME}; claude --name '${PROJECT_NAME}' --model opus --effort high --dangerously-skip-permissions --dangerously-load-development-channels plugin:agent-team-bridge@agent-team-bridge; exec bash"
 
 # Wait for Claude to start, auto-accept dev channels prompt if it appears
 for i in $(seq 1 10); do
