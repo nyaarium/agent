@@ -15,4 +15,7 @@ DEVCONTAINER_NAME="${PROJECT_NAME}_devcontainer"
 echo "Stopping devcontainer for ${PROJECT_NAME}..."
 docker compose -p "$DEVCONTAINER_NAME" down --remove-orphans 2>/dev/null || true
 
+# Remove stale project networks
+docker network ls --filter "name=${DEVCONTAINER_NAME}" -q | xargs -r docker network rm 2>/dev/null || true
+
 echo "Devcontainer ${PROJECT_NAME} stopped."
