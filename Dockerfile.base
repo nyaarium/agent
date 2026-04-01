@@ -22,6 +22,7 @@ RUN apt update -qq && apt install -qq -y \
 	curl \
 	gcc \
 	git \
+	git-lfs \
 	gpg \
 	htop \
 	iftop \
